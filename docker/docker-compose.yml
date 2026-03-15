@@ -1,0 +1,87 @@
+services:
+  aigarden.yarpgateway:
+    image: ${DOCKER_REGISTRY-}aigardenyarpgateway
+    build:
+      context: ../
+      dockerfile: gateway/AiGarden.YarpGateway/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+  
+  aigarden.database:
+    image: postgres:18
+    container_name: aigarden.database
+    environment:
+      - POSTGRES_DB=aigarden
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - 5432:5432
+
+  master:
+    image: chrislusf/seaweedfs:4.17
+    ports:
+      - 9333:9333
+      - 19333:19333
+      - 9324:9324
+    command: 'master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324'
+  volume:
+    image: chrislusf/seaweedfs:4.17 
+    ports:
+      - 8080:8080
+      - 18080:18080
+      - 9325:9325
+    command: 'volume -ip=volume -master="master:9333" -ip.bind=0.0.0.0 -port=8080 -metricsPort=9325'
+    depends_on:
+      - master
+  filer:
+    image: chrislusf/seaweedfs:4.17 
+    ports:
+      - 8888:8888
+      - 18888:18888
+      - 9326:9326
+    command: 'filer -ip=filer -master="master:9333" -ip.bind=0.0.0.0 -metricsPort=9326'
+    tty: true
+    stdin_open: true
+    depends_on:
+      - master
+      - volume
+  s3:
+    image: chrislusf/seaweedfs:4.17 
+    ports:
+      - 8333:8333
+      - 9327:9327
+    command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327'
+    depends_on:
+      - master
+      - volume
+      - filer
+  
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama      
+
+  ollama-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ollama-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    volumes:
+      - webui-data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - ollama
+
+volumes: 
+  postgres_data:
+  ollama-data:
+  webui-data:
