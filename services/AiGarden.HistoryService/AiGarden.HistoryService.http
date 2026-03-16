@@ -1,0 +1,6 @@
+@AiGarden.HistoryService_HostAddress = http://localhost:5232
+
+GET {{AiGarden.HistoryService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

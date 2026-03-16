@@ -7,4 +7,9 @@
   <Folder Name="/gateway/">
     <Project Path="gateway/AiGarden.YarpGateway/AiGarden.YarpGateway.csproj" />
   </Folder>
+  <Folder Name="/services/">
+    <Project Path="services/AiGarden.AiService/AiGarden.AiService.csproj" />
+    <Project Path="services/AiGarden.HistoryService/AiGarden.HistoryService.csproj" />
+    <Project Path="services/AiGarden.StorageS3Service/AiGarden.StorageS3Service.csproj" />
+  </Folder>
 </Solution>

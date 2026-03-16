@@ -1,0 +1,6 @@
+@AiGarden.StorageS3Service_HostAddress = http://localhost:5056
+
+GET {{AiGarden.StorageS3Service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
