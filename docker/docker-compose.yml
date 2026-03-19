@@ -7,6 +7,19 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001"
+
+  aigarden.aiservice:
+    image: ${DOCKER_REGISTRY-}aigardenaiservice
+    build:
+      context: ../
+      dockerfile: services/AiGarden.AiService/Dockerfile
+    environment:
+      - RabbitMQ__Host=amqp://aigarden-queue:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5100:5100"
+      - "5101:5101"
   
   aigarden.database:
     image: postgres:18
@@ -19,6 +32,19 @@ services:
       - postgres_data:/var/lib/postgresql
     ports:
       - 5432:5432
+  
+  aigarden.queue:
+    image: rabbitmq:4.2.4-management-alpine
+    container_name: AiGarden.Queue
+    hostname: aigarden-queue
+    ports:
+      - "5672:5672"   
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   master:
     image: chrislusf/seaweedfs:4.17
@@ -83,5 +109,6 @@ services:
 
 volumes: 
   postgres_data:
+  rabbitmq_data:
   ollama-data:
   webui-data:
