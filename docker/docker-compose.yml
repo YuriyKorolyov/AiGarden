@@ -1,44 +1,197 @@
 services:
-  aigarden.yarpgateway:
-    image: ${DOCKER_REGISTRY-}aigardenyarpgateway
+  aigarden-yarpgateway:
+    image: aigarden-yarpgateway
     build:
       context: ../
       dockerfile: gateway/AiGarden.YarpGateway/Dockerfile
+    container_name: aigarden-yarpgateway
     ports:
-      - "5000:5000"
-      - "5001:5001"
+      - "5000:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      Authentication__Authority: http://keycloak:8080/realms/aigarden
+      Authentication__Audience: aigarden-api
+      Authentication__RequireHttpsMetadata: false
+      OpenTelemetry__OtlpEndpoint: http://otel-collector:4317
+    depends_on:
+      - aigarden-aiservice
+      - aigarden-historyservice
+      - aigarden-storages3service
+      - aigarden-userservice
 
-  aigarden.aiservice:
-    image: ${DOCKER_REGISTRY-}aigardenaiservice
+  aigarden-aiservice:
+    image: aigarden-aiservice
     build:
       context: ../
-      dockerfile: services/AiGarden.AiService/Dockerfile
-    environment:
-      - RabbitMQ__Host=amqp://aigarden-queue:5672
-      - RabbitMQ__Username=guest
-      - RabbitMQ__Password=guest
+      dockerfile: services/AiGarden.AiService/AiGarden.AiService/Dockerfile
+    container_name: aigarden-aiservice
     ports:
-      - "5100:5100"
-      - "5101:5101"
-  
-  aigarden.database:
+      - "5100:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__AiDb: Host=aigarden-ai-db;Port=5432;Database=aigarden_ai;Username=postgres;Password=postgres
+      RabbitMq__Host: amqp://aigarden-queue:5672
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Nvidia__ApiKey: ${NVIDIA_API_KEY:-}
+      Nvidia__ChatCompletionsUrl: https://integrate.api.nvidia.com/v1/chat/completions
+      Nvidia__DefaultModel: mistralai/mistral-large-3-675b-instruct-2512
+      Ollama__BaseUrl: http://ollama:11434
+      Ollama__DefaultModel: qwen3.5:9b
+      Authentication__Authority: http://keycloak:8080/realms/aigarden
+      Authentication__Audience: aigarden-api
+      Authentication__RequireHttpsMetadata: false
+      OpenTelemetry__OtlpEndpoint: http://otel-collector:4317
+    depends_on:
+      - aigarden-ai-db
+      - aigarden-queue
+      - ollama
+
+  aigarden-historyservice:
+    image: aigarden-historyservice
+    build:
+      context: ../
+      dockerfile: services/AiGarden.HistoryService/AiGarden.HistoryService/Dockerfile
+    container_name: aigarden-historyservice
+    ports:
+      - "5200:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__HistoryDb: Host=aigarden-history-db;Port=5432;Database=aigarden_history;Username=postgres;Password=postgres
+      RabbitMq__Host: amqp://aigarden-queue:5672
+      RabbitMq__Username: guest
+      RabbitMq__Password: guest
+      Authentication__Authority: http://keycloak:8080/realms/aigarden
+      Authentication__Audience: aigarden-api
+      Authentication__RequireHttpsMetadata: false
+      OpenTelemetry__OtlpEndpoint: http://otel-collector:4317
+    depends_on:
+      - aigarden-history-db
+      - aigarden-queue
+
+  aigarden-storages3service:
+    image: aigarden-storages3service
+    build:
+      context: ../
+      dockerfile: services/AiGarden.StorageS3Service/AiGarden.StorageS3Service/Dockerfile
+    container_name: aigarden-storages3service
+    ports:
+      - "5300:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__StorageDb: Host=aigarden-storage-db;Port=5432;Database=aigarden_storage;Username=postgres;Password=postgres
+      SeaweedFsS3__ServiceUrl: http://s3:8333
+      SeaweedFsS3__BucketName: plant-images
+      SeaweedFsS3__AccessKey: seaweedfs
+      SeaweedFsS3__SecretKey: seaweedfs
+      SeaweedFsS3__ForcePathStyle: true
+      SeaweedFsS3__PublicBaseUrl: http://localhost:8333/plant-images
+      Authentication__Authority: http://keycloak:8080/realms/aigarden
+      Authentication__Audience: aigarden-api
+      Authentication__RequireHttpsMetadata: false
+      OpenTelemetry__OtlpEndpoint: http://otel-collector:4317
+    depends_on:
+      - aigarden-storage-db
+      - s3
+
+  aigarden-userservice:
+    image: aigarden-userservice
+    build:
+      context: ../
+      dockerfile: services/AiGarden.UserService/AiGarden.UserService/Dockerfile
+    container_name: aigarden-userservice
+    ports:
+      - "5400:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__UserDb: Host=aigarden-user-db;Port=5432;Database=aigarden_user;Username=postgres;Password=postgres
+      Authentication__Authority: http://keycloak:8080/realms/aigarden
+      Authentication__Audience: aigarden-api
+      Authentication__RequireHttpsMetadata: false
+      OpenTelemetry__OtlpEndpoint: http://otel-collector:4317
+    depends_on:
+      - aigarden-user-db
+
+  aigarden-ai-db:
     image: postgres:18
-    container_name: aigarden.database
+    container_name: aigarden-ai-db
     environment:
-      - POSTGRES_DB=aigarden
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql
+      POSTGRES_DB: aigarden_ai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - 5432:5432
-  
-  aigarden.queue:
+      - "5433:5432"
+    volumes:
+      - ai_db_data:/var/lib/postgresql
+
+  aigarden-history-db:
+    image: postgres:18
+    container_name: aigarden-history-db
+    environment:
+      POSTGRES_DB: aigarden_history
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - history_db_data:/var/lib/postgresql
+
+  aigarden-storage-db:
+    image: postgres:18
+    container_name: aigarden-storage-db
+    environment:
+      POSTGRES_DB: aigarden_storage
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - storage_db_data:/var/lib/postgresql
+
+  aigarden-user-db:
+    image: postgres:18
+    container_name: aigarden-user-db
+    environment:
+      POSTGRES_DB: aigarden_user
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - user_db_data:/var/lib/postgresql
+
+  keycloak-db:
+    image: postgres:18
+    container_name: keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: keycloak
+    command: start-dev --http-port=8080
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8088:8080"
+    depends_on:
+      - keycloak-db
+
+  aigarden-queue:
     image: rabbitmq:4.2.4-management-alpine
-    container_name: AiGarden.Queue
+    container_name: aigarden-queue
     hostname: aigarden-queue
     ports:
-      - "5672:5672"   
+      - "5672:5672"
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
@@ -48,43 +201,43 @@ services:
 
   master:
     image: chrislusf/seaweedfs:4.17
+    command: master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324
     ports:
-      - 9333:9333
-      - 19333:19333
-      - 9324:9324
-    command: 'master -ip=master -ip.bind=0.0.0.0 -metricsPort=9324'
+      - "9333:9333"
+      - "9324:9324"
+
   volume:
-    image: chrislusf/seaweedfs:4.17 
+    image: chrislusf/seaweedfs:4.17
+    command: volume -ip=volume -master=master:9333 -ip.bind=0.0.0.0 -port=8080 -metricsPort=9325
     ports:
-      - 8080:8080
-      - 18080:18080
-      - 9325:9325
-    command: 'volume -ip=volume -master="master:9333" -ip.bind=0.0.0.0 -port=8080 -metricsPort=9325'
+      - "8080:8080"
+      - "9325:9325"
     depends_on:
       - master
+
   filer:
-    image: chrislusf/seaweedfs:4.17 
+    image: chrislusf/seaweedfs:4.17
+    command: filer -ip=filer -master=master:9333 -ip.bind=0.0.0.0 -metricsPort=9326
     ports:
-      - 8888:8888
-      - 18888:18888
-      - 9326:9326
-    command: 'filer -ip=filer -master="master:9333" -ip.bind=0.0.0.0 -metricsPort=9326'
-    tty: true
-    stdin_open: true
+      - "8888:8888"
+      - "9326:9326"
     depends_on:
       - master
       - volume
+
   s3:
-    image: chrislusf/seaweedfs:4.17 
+    image: chrislusf/seaweedfs:4.17
+    command: s3 -filer=filer:8888 -ip.bind=0.0.0.0 -metricsPort=9327 -config=/etc/seaweedfs/s3.json
     ports:
-      - 8333:8333
-      - 9327:9327
-    command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327'
+      - "8333:8333"
+      - "9327:9327"
+    volumes:
+      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
     depends_on:
       - master
       - volume
       - filer
-  
+
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
@@ -92,23 +245,49 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama-data:/root/.ollama      
+      - ollama_data:/root/.ollama
 
-  ollama-webui:
-    image: ghcr.io/open-webui/open-webui:main
-    container_name: ollama-webui
-    restart: unless-stopped
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command:
+      - "--config=/etc/otelcol-contrib/config.yaml"
     ports:
-      - "3000:8080"
+      - "4317:4317"
+      - "4318:4318"
+      - "9464:9464"
     volumes:
-      - webui-data:/app/backend/data
-    environment:
-      - OLLAMA_BASE_URL=http://ollama:11434
-    depends_on:
-      - ollama
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
 
-volumes: 
-  postgres_data:
+  prometheus:
+    image: prom/prometheus:v3.3.0
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:12.0.1
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  ai_db_data:
+  history_db_data:
+  storage_db_data:
+  user_db_data:
+  keycloak_db_data:
   rabbitmq_data:
-  ollama-data:
-  webui-data:
+  ollama_data:
+  grafana_data:

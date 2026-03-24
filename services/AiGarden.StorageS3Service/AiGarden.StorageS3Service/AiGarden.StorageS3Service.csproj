@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\AiGarden.StorageS3Service.Core\AiGarden.StorageS3Service.Core.csproj" />
+    <ProjectReference Include="..\AiGarden.StorageS3Service.UseCases\AiGarden.StorageS3Service.UseCases.csproj" />
+    <ProjectReference Include="..\AiGarden.StorageS3Service.Infrastructure\AiGarden.StorageS3Service.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.BuildingBlocks\AiGarden.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.Contracts\AiGarden.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+</Project>

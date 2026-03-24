@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\AiGarden.UserService.Core\AiGarden.UserService.Core.csproj" />
+    <ProjectReference Include="..\AiGarden.UserService.UseCases\AiGarden.UserService.UseCases.csproj" />
+    <ProjectReference Include="..\AiGarden.UserService.Infrastructure\AiGarden.UserService.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.BuildingBlocks\AiGarden.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.Contracts\AiGarden.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+</Project>
