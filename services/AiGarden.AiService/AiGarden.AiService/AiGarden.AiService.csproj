@@ -1,18 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>9c8c9b9b-9dc3-4101-b7dc-efc959dc9961</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
-    <DockerComposeProjectPath>..\..\docker\docker-compose.dcproj</DockerComposeProjectPath>
-  </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+    <ProjectReference Include="..\AiGarden.AiService.Core\AiGarden.AiService.Core.csproj" />
+    <ProjectReference Include="..\AiGarden.AiService.UseCases\AiGarden.AiService.UseCases.csproj" />
+    <ProjectReference Include="..\AiGarden.AiService.Infrastructure\AiGarden.AiService.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.BuildingBlocks\AiGarden.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.Contracts\AiGarden.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
 </Project>

@@ -7,14 +7,36 @@
   <Folder Name="/gateway/">
     <Project Path="gateway/AiGarden.YarpGateway/AiGarden.YarpGateway.csproj" />
   </Folder>
+  <Folder Name="/shared/" />
+  <Folder Name="/shared/AiGarden.BuildingBlocks/">
+    <Project Path="shared/AiGarden.BuildingBlocks/AiGarden.BuildingBlocks.csproj" />
+  </Folder>
+  <Folder Name="/shared/AiGarden.Contracts/">
+    <Project Path="shared/AiGarden.Contracts/AiGarden.Contracts.csproj" />
+  </Folder>
   <Folder Name="/services/" />
   <Folder Name="/services/AiGarden.AiService/">
     <Project Path="services/AiGarden.AiService/AiGarden.AiService/AiGarden.AiService.csproj" />
+    <Project Path="services/AiGarden.AiService/AiGarden.AiService.Core/AiGarden.AiService.Core.csproj" />
+    <Project Path="services/AiGarden.AiService/AiGarden.AiService.UseCases/AiGarden.AiService.UseCases.csproj" />
+    <Project Path="services/AiGarden.AiService/AiGarden.AiService.Infrastructure/AiGarden.AiService.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/services/AiGarden.HistoryService/">
     <Project Path="services/AiGarden.HistoryService/AiGarden.HistoryService/AiGarden.HistoryService.csproj" />
+    <Project Path="services/AiGarden.HistoryService/AiGarden.HistoryService.Core/AiGarden.HistoryService.Core.csproj" />
+    <Project Path="services/AiGarden.HistoryService/AiGarden.HistoryService.UseCases/AiGarden.HistoryService.UseCases.csproj" />
+    <Project Path="services/AiGarden.HistoryService/AiGarden.HistoryService.Infrastructure/AiGarden.HistoryService.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/services/AiGarden.StorageS3Service/">
     <Project Path="services/AiGarden.StorageS3Service/AiGarden.StorageS3Service/AiGarden.StorageS3Service.csproj" />
+    <Project Path="services/AiGarden.StorageS3Service/AiGarden.StorageS3Service.Core/AiGarden.StorageS3Service.Core.csproj" />
+    <Project Path="services/AiGarden.StorageS3Service/AiGarden.StorageS3Service.UseCases/AiGarden.StorageS3Service.UseCases.csproj" />
+    <Project Path="services/AiGarden.StorageS3Service/AiGarden.StorageS3Service.Infrastructure/AiGarden.StorageS3Service.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/services/AiGarden.UserService/">
+    <Project Path="services/AiGarden.UserService/AiGarden.UserService/AiGarden.UserService.csproj" />
+    <Project Path="services/AiGarden.UserService/AiGarden.UserService.Core/AiGarden.UserService.Core.csproj" />
+    <Project Path="services/AiGarden.UserService/AiGarden.UserService.UseCases/AiGarden.UserService.UseCases.csproj" />
+    <Project Path="services/AiGarden.UserService/AiGarden.UserService.Infrastructure/AiGarden.UserService.Infrastructure.csproj" />
   </Folder>
 </Solution>

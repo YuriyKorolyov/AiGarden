@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\AiGarden.UserService.Core\AiGarden.UserService.Core.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.BuildingBlocks\AiGarden.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\..\shared\AiGarden.Contracts\AiGarden.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+  </ItemGroup>
+</Project>
