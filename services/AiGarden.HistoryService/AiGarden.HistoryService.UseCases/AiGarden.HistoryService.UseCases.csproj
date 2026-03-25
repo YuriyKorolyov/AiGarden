@@ -1,12 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\AiGarden.HistoryService.Core\AiGarden.HistoryService.Core.csproj" />
-    <ProjectReference Include="..\..\..\shared\AiGarden.BuildingBlocks\AiGarden.BuildingBlocks.csproj" />
-    <ProjectReference Include="..\..\..\shared\AiGarden.Contracts\AiGarden.Contracts.csproj" />
-  </ItemGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\AiGarden.HistoryService.Core\AiGarden.HistoryService.Core.csproj" />
+		<ProjectReference Include="..\..\..\shared\AiGarden.BuildingBlocks\AiGarden.BuildingBlocks.csproj" />
+		<ProjectReference Include="..\..\..\shared\AiGarden.Contracts\AiGarden.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentValidation" Version="12.1.1" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+	</ItemGroup>
 </Project>
